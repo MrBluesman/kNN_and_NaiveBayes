@@ -54,6 +54,7 @@ def sort_train_labels_knn(Dist, y):
             sorted_y[n1][i] = y[sorted_args[i]]
     return sorted_y
 
+
 def p_y_x_knn(y, k):
     """
     Funkcja wyznacza rozklad prawdopodobienstwa p(y|x) dla
@@ -63,7 +64,16 @@ def p_y_x_knn(y, k):
     :param k: liczba najblizszuch sasiadow dla KNN
     :return: macierz prawdopodobienstw dla obiektow z X
     """
-    pass
+    classes = np.unique(y)
+    p_y_x = np.zeros(shape=(y.shape[0], classes.shape[0]))
+    for row in range(y.shape[0]):
+        for c in range(classes.shape[0]):
+            sum_index = 0
+            for col in range(k):
+                if classes[c] == y[row][col]:
+                    sum_index = sum_index + 1
+            p_y_x[row][c] = sum_index/k
+    return p_y_x
 
 
 def classification_error(p_y_x, y_true):
