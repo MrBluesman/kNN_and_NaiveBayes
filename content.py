@@ -84,8 +84,38 @@ def classification_error(p_y_x, y_true):
     Kazdy wiersz macierzy reprezentuje rozklad p(y|x)
     :return: blad klasyfikacji
     """
-    pass
+    error_val = 0
+    for row in range(p_y_x.shape[0]):
+        act_prob = 0
+        act_class = p_y_x[row][0]
+        for c in range(p_y_x.shape[1]):
+            if p_y_x[row][c] >= act_prob:
+                act_prob = p_y_x[row][c]
+                act_class = c
+        if act_class != y_true[row]:
+            error_val = error_val + 1
+    return error_val/p_y_x.shape[0]
+    # p_y_x = np.fliplr(p_y_x)
+    # y_truea = p_y_x.shape[1] - np.argmax(p_y_x, axis=1)
+    # y_truea = np.subtract(y_truea, y_true)
+    # diff = np.count_nonzero(y_truea)
+    # diff /= y_true.shape[0]
+    #
+    # return diff
 
+#     for tekst=1:size(p_y_x, 1)
+#     act_prob = p_y_x(tekst, 1);
+#     act_klasa = 1;
+#     for klasa=2:size(p_y_x, 2)
+#     if p_y_x(tekst, klasa) >= act_prob
+#         act_prob = p_y_x(tekst, klasa);
+#         act_klasa = klasa;
+# if act_klasa~=y_true(tekst)
+# error_val = error_val + 1;
+# end
+# end
+#
+# error_val = error_val / length(y_true);
 
 def model_selection_knn(Xval, Xtrain, yval, ytrain, k_values):
     """
