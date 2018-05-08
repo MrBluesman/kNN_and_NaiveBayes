@@ -155,7 +155,35 @@ def estimate_p_x_y_nb(Xtrain, ytrain, a, b):
     :return: funkcja wyznacza rozklad prawdopodobienstwa p(x|y) zakladajac, ze x przyjmuje wartosci binarne i ze elementy
     x sa niezalezne od siebie. Funkcja zwraca macierz p_x_y o wymiarach MxD.
     """
-    pass
+    Xtrain = Xtrain.toarray()
+    classes = np.unique(ytrain)
+    rows = []
+    p_x_y = np.zeros(shape=(classes.shape[0], Xtrain.shape[1]))
+    for m in range(classes.shape[0]):
+        for d in range(Xtrain.shape[1]):
+            sum_up = 0
+            sum_down = 0
+            for n in range(Xtrain.shape[0]):
+                if classes[m] == ytrain[n]:
+                    sum_down = sum_down + 1
+                    if Xtrain[n][d] == 1:
+                        sum_up = sum_up + 1
+            p_x_y[m][d] = (sum_up + a - 1) / (sum_down + a + b - 2)
+    return p_x_y
+    # Xtrain = Xtrain.toarray()
+    # NUMBER_OF_CLASSES = 4
+    # rows =[]
+    #
+    # def summ(row, yequalk):
+    #     return np.sum(np.bitwise_and(row, yequalk))
+    #
+    # for i in range(1, NUMBER_OF_CLASSES + 1):
+    #     yk = np.equal(ytrain, i)
+    #     yksum = np.sum(yk)
+    #     row = np.apply_along_axis(summ, axis=0, arr=Xtrain, yequalk=yk)
+    #     rows.append(np.divide(np.add(row, a - 1), yksum + a + b - 2))
+    #
+    # return np.vstack(rows)\
 
 
 def p_y_x_nb(p_y, p_x_1_y, X):
