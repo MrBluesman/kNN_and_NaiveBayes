@@ -103,19 +103,6 @@ def classification_error(p_y_x, y_true):
     #
     # return diff
 
-#     for tekst=1:size(p_y_x, 1)
-#     act_prob = p_y_x(tekst, 1);
-#     act_klasa = 1;
-#     for klasa=2:size(p_y_x, 2)
-#     if p_y_x(tekst, klasa) >= act_prob
-#         act_prob = p_y_x(tekst, klasa);
-#         act_klasa = klasa;
-# if act_klasa~=y_true(tekst)
-# error_val = error_val + 1;
-# end
-# end
-#
-# error_val = error_val / length(y_true);
 
 def model_selection_knn(Xval, Xtrain, yval, ytrain, k_values):
     """
@@ -127,7 +114,17 @@ def model_selection_knn(Xval, Xtrain, yval, ytrain, k_values):
     :return: funkcja wykonuje selekcje modelu knn i zwraca krotke (best_error,best_k,errors), gdzie best_error to najnizszy
     osiagniety blad, best_k - k dla ktorego blad byl najnizszy, errors - lista wartosci bledow dla kolejnych k z k_values
     """
-    pass
+    best_k_index = 0
+    errors = []
+    sorted_train = sort_train_labels_knn(hamming_distance(Xval, Xtrain), ytrain)
+
+    for k in range(k_values.shape[0]):
+        error = classification_error(p_y_x_knn(sorted_train, k_values[k]), yval)
+        errors.append(error)
+        if errors[best_k_index] > error:
+            best_k_index = k
+
+    return errors[best_k_index], k_values[best_k_index], errors
 
 
 def estimate_a_priori_nb(ytrain):
