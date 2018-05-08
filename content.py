@@ -194,7 +194,36 @@ def p_y_x_nb(p_y, p_x_1_y, X):
     :return: funkcja wyznacza rozklad prawdopodobienstwa p(y|x) dla kazdej z klas z wykorzystaniem klasyfikatora Naiwnego
     Bayesa. Funkcja zwraca macierz p_y_x o wymiarach NxM.
     """
-    pass
+    X = X.toarray()
+    p_x_0_y = 1 - p_x_1_y
+    p_y_x = []
+    for n in range(X.shape[0]):
+        success = p_x_1_y ** X[n, :]
+        fail = p_x_0_y ** (1 - X)[n, :]
+        temp = np.prod(success * fail, axis=1) * p_y
+        # sum of p(x|y') * p(y')
+        sum_down = np.sum(temp)
+        p_y_x.append(temp / sum_down)
+    return np.array(p_y_x)
+    # def calc2(row, x2):
+    #     out1 = np.multiply(row, x2)
+    #     return out1
+    #
+    # def normalise(row):
+    #     Z = 1 / np.sum(row)
+    #     return np.multiply(row, Z)
+    #
+    # def calc(row):
+    #     out = X * row
+    #     out += ~X - ~X * row
+    #     out = np.apply_along_axis(np.prod, arr=out, axis=1)
+    #     return out
+    #
+    # test = np.apply_along_axis(calc, axis=0, arr=p_x_1_y.transpose())
+    # test = np.apply_along_axis(calc2, axis=1, arr=test, x2=p_y)
+    # test = np.apply_along_axis(normalise, axis=1, arr=test)
+    #
+    # return test
 
 
 def model_selection_nb(Xtrain, Xval, ytrain, yval, a_values, b_values):
