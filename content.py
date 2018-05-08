@@ -132,7 +132,18 @@ def estimate_a_priori_nb(ytrain):
     :param ytrain: etykiety dla dla danych treningowych 1xN
     :return: funkcja wyznacza rozklad a priori p(y) i zwraca p_y - wektor prawdopodobienstw a priori 1xM
     """
-    pass
+    classes = np.unique(ytrain)
+    p_y = []
+    for c in range(classes.shape[0]):
+        sum_index = 0
+        for col in range(ytrain.shape[0]):
+            if classes[c] == ytrain[col]:
+                sum_index = sum_index + 1
+        p_y.append(sum_index/ytrain.shape[0])
+    return p_y
+
+    # NUMBER_OF_CLASSES = 4
+    # return np.divide(np.delete(np.bincount(ytrain, minlength=NUMBER_OF_CLASSES + 1), 0), ytrain.shape[0])
 
 
 def estimate_p_x_y_nb(Xtrain, ytrain, a, b):
