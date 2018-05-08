@@ -47,8 +47,12 @@ def sort_train_labels_knn(Dist, y):
     wartosci podobienstw odpowiadajacego wiersza macierzy
     Dist. Uzyc algorytmu mergesort.
     """
-    pass
-
+    sorted_y = np.zeros(shape=(Dist.shape[0], Dist.shape[1]))
+    for n1 in range(Dist.shape[0]):
+        sorted_args = Dist[n1].argsort(kind='merge')
+        for i in range(sorted_args.shape[0]):
+            sorted_y[n1][i] = y[sorted_args[i]]
+    return sorted_y
 
 def p_y_x_knn(y, k):
     """
