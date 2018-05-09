@@ -72,24 +72,12 @@ def classification_error(p_y_x, y_true):
     Kazdy wiersz macierzy reprezentuje rozklad p(y|x)
     :return: blad klasyfikacji
     """
-    error_val = 0
-    for row in range(p_y_x.shape[0]):
-        act_prob = 0
-        act_class = p_y_x[row][0]
-        for c in range(p_y_x.shape[1]):
-            if p_y_x[row][c] >= act_prob:
-                act_prob = p_y_x[row][c]
-                act_class = c
-        if act_class != y_true[row]:
-            error_val = error_val + 1
-    return error_val/p_y_x.shape[0]
-    # p_y_x = np.fliplr(p_y_x)
-    # y_truea = p_y_x.shape[1] - np.argmax(p_y_x, axis=1)
-    # y_truea = np.subtract(y_truea, y_true)
-    # diff = np.count_nonzero(y_truea)
-    # diff /= y_true.shape[0]
-    #
-    # return diff
+    # wybierz klase k o najwyższym prawdopodobieństwie (największa klasa a)
+    best_c = p_y_x.shape[1] - 1 - np.argmax(np.flip(p_y_x, axis=1), axis=1)
+    best_c = np.subtract(best_c, y_true)
+    diff = np.count_nonzero(best_c)
+    diff /= y_true.shape[0]
+    return diff
 
 
 def model_selection_knn(Xval, Xtrain, yval, ytrain, k_values):
