@@ -43,13 +43,8 @@ def sort_train_labels_knn(Dist, y):
     wartosci podobienstw odpowiadajacego wiersza macierzy
     Dist. Uzyc algorytmu mergesort.
     """
-    sorted_y = np.zeros(shape=(Dist.shape[0], Dist.shape[1]))
-    for n1 in range(Dist.shape[0]):
-        sorted_args = Dist[n1].argsort(kind='merge')
-        for i in range(sorted_args.shape[0]):
-            sorted_y[n1][i] = y[sorted_args[i]]
-    return sorted_y
-
+    dist_sorted_args = Dist.argsort(kind='mergesort')
+    return y[dist_sorted_args]
 
 def p_y_x_knn(y, k):
     """
@@ -114,7 +109,7 @@ def model_selection_knn(Xval, Xtrain, yval, ytrain, k_values):
     errors = []
     sorted_train = sort_train_labels_knn(hamming_distance(Xval, Xtrain), ytrain)
 
-    for k in range(k_values.shape[0]):
+    for k in range(len(k_values)):
         error = classification_error(p_y_x_knn(sorted_train, k_values[k]), yval)
         errors.append(error)
         if errors[best_k_index] > error:
