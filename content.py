@@ -46,6 +46,7 @@ def sort_train_labels_knn(Dist, y):
     dist_sorted_args = Dist.argsort(kind='mergesort')
     return y[dist_sorted_args]
 
+
 def p_y_x_knn(y, k):
     """
     Funkcja wyznacza rozklad prawdopodobienstwa p(y|x) dla
@@ -56,15 +57,11 @@ def p_y_x_knn(y, k):
     :return: macierz prawdopodobienstw dla obiektow z X
     """
     classes = np.unique(y)
-    p_y_x = np.zeros(shape=(y.shape[0], classes.shape[0]))
-    for row in range(y.shape[0]):
-        for c in range(classes.shape[0]):
-            sum_index = 0
-            for col in range(k):
-                if classes[c] == y[row][col]:
-                    sum_index = sum_index + 1
-            p_y_x[row][c] = sum_index/k
-    return p_y_x
+    # potrzebujemy tylko N1xk etykiet (są posortowane od najbliższych)
+    resize_y = np.delete(y, range(k, y.shape[1]), axis=1)
+    # zliczanie klas dla każdego wiersza w resized_y
+    p_y_x = np.apply_along_axis(np.bincount, axis=1, arr=resize_y, minlength=classes.shape[0])
+    return np.divide(p_y_x, k)
 
 
 def classification_error(p_y_x, y_true):
