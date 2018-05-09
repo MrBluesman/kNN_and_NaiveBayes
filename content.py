@@ -23,12 +23,8 @@ def hamming_distance(X, X_train):
     X = X.toarray()
     X_train = X_train.toarray()
 
-    distance_matrix = np.zeros(shape=(X.shape[0], X_train.shape[0]))
-    for n1 in range(X.shape[0]):
-        for n2 in range(X_train.shape[0]):
-            for d in range(X.shape[1]):
-                if X[n1][d] != X_train[n2][d]:
-                    distance_matrix[n1][n2] = distance_matrix[n1][n2] + 1
+    distance_matrix = (1 - X) @ X_train.transpose()
+    distance_matrix += X @ (1 - X_train.transpose())
     return distance_matrix
 
 
@@ -239,5 +235,39 @@ def model_selection_nb(Xtrain, Xval, ytrain, yval, a_values, b_values):
     osiagniety blad, best_a - a dla ktorego blad byl najnizszy, best_b - b dla ktorego blad byl najnizszy,
     errors - macierz wartosci bledow dla wszystkich par (a,b)
     """
-    pass
+    best_e_index = 0
+    alen = int(len(a_values))
+    blen = int(len(b_values))
+    errors = []
 
+    def test(index):
+        nonlocal best_e_index
+        i = int(index / alen)
+        j = int(index % blen)
+
+        py = estimate_a_priori_nb(ytrain)
+        p_x_y = estimate_p_x_y_nb(Xtrain, ytrain, a_values[i], b_values[j])
+        p_y_x = p_y_x_nb(py, p_x_y, Xval)
+        error = classification_error(p_y_x, yval)
+        errors.append(error)
+
+        if errors[best_e_index] > error:
+            best_e_index = index
+
+    xx = map(test, range(alen * blen))
+    list(xx)
+
+    return (errors[best_e_index], a_values[int(round(best_e_index / len(b_values)))],
+            b_values[best_e_index % len(b_values)], np.array(errors).reshape(len(a_values), len(b_values)))
+
+    # best_k_index = 0
+    # errors = []
+    # sorted_train = sort_train_labels_knn(hamming_distance(Xval, Xtrain), ytrain)
+    #
+    # for k in range(k_values.shape[0]):
+    #     error = classification_error(p_y_x_knn(sorted_train, k_values[k]), yval)
+    #     errors.append(error)
+    #     if errors[best_k_index] > error:
+    #         best_k_index = k
+    #
+    # return errors[best_k_index], k_values[best_k_index], errors
