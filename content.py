@@ -127,32 +127,23 @@ def estimate_p_x_y_nb(Xtrain, ytrain, a, b):
     Xtrain = Xtrain.toarray()
     classes = np.unique(ytrain)
     rows = []
-    p_x_y = np.zeros(shape=(classes.shape[0], Xtrain.shape[1]))
+    # dla każdego wiersza m (każdej klasy)
     for m in range(classes.shape[0]):
-        for d in range(Xtrain.shape[1]):
-            sum_up = 0
-            sum_down = 0
-            for n in range(Xtrain.shape[0]):
-                if classes[m] == ytrain[n]:
-                    sum_down = sum_down + 1
-                    if Xtrain[n][d] == 1:
-                        sum_up = sum_up + 1
-            p_x_y[m][d] = (sum_up + a - 1) / (sum_down + a + b - 2)
-    return p_x_y
-    # Xtrain = Xtrain.toarray()
-    # NUMBER_OF_CLASSES = 4
-    # rows =[]
-    #
-    # def summ(row, yequalk):
-    #     return np.sum(np.bitwise_and(row, yequalk))
-    #
-    # for i in range(1, NUMBER_OF_CLASSES + 1):
-    #     yk = np.equal(ytrain, i)
-    #     yksum = np.sum(yk)
-    #     row = np.apply_along_axis(summ, axis=0, arr=Xtrain, yequalk=yk)
-    #     rows.append(np.divide(np.add(row, a - 1), yksum + a + b - 2))
-    #
-    # return np.vstack(rows)\
+        # zlicz k in ytrain
+        y_train_k = np.equal(ytrain, m)
+        y_train_k_count = sum(y_train_k)
+
+        # zlicz jeśli k jest w ytrain i w Xtrain na pozycji n jest 1
+        def sum_x_equals1_and_k(col, equals_k):
+            return np.sum(np.bitwise_and(col, equals_k))
+
+        # zlicz po kolumnach
+        row = np.apply_along_axis(sum_x_equals1_and_k, axis=0, arr=Xtrain, equals_k=y_train_k)
+        # podziel i dodaj do tablicy wierszy, która będzie przekonwertowana na macierz MxD
+        rows.append(np.divide(np.add(row, a - 1), y_train_k_count + a + b - 2))
+
+    # konwertuj na macierz
+    return np.stack(rows)
 
 
 def p_y_x_nb(p_y, p_x_1_y, X):
@@ -174,25 +165,6 @@ def p_y_x_nb(p_y, p_x_1_y, X):
         sum_down = np.sum(temp)
         p_y_x.append(temp / sum_down)
     return np.array(p_y_x)
-    # def calc2(row, x2):
-    #     out1 = np.multiply(row, x2)
-    #     return out1
-    #
-    # def normalise(row):
-    #     Z = 1 / np.sum(row)
-    #     return np.multiply(row, Z)
-    #
-    # def calc(row):
-    #     out = X * row
-    #     out += ~X - ~X * row
-    #     out = np.apply_along_axis(np.prod, arr=out, axis=1)
-    #     return out
-    #
-    # test = np.apply_along_axis(calc, axis=0, arr=p_x_1_y.transpose())
-    # test = np.apply_along_axis(calc2, axis=1, arr=test, x2=p_y)
-    # test = np.apply_along_axis(normalise, axis=1, arr=test)
-    #
-    # return test
 
 
 def model_selection_nb(Xtrain, Xval, ytrain, yval, a_values, b_values):
