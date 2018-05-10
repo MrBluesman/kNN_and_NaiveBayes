@@ -74,7 +74,9 @@ def classification_error(p_y_x, y_true):
     """
     # wybierz klase k o najwyższym prawdopodobieństwie (największa klasa a)
     best_c = p_y_x.shape[1] - 1 - np.argmax(np.flip(p_y_x, axis=1), axis=1)
+    # odejmij od klas prawdziwe klasy, aby sprawdzić czy są równe
     best_c = np.subtract(best_c, y_true)
+    # zlicz jeśli nie są zerem (są różne)
     diff = np.count_nonzero(best_c)
     diff /= y_true.shape[0]
     return diff
@@ -108,18 +110,9 @@ def estimate_a_priori_nb(ytrain):
     :param ytrain: etykiety dla dla danych treningowych 1xN
     :return: funkcja wyznacza rozklad a priori p(y) i zwraca p_y - wektor prawdopodobienstw a priori 1xM
     """
-    classes = np.unique(ytrain)
-    p_y = []
-    for c in range(classes.shape[0]):
-        sum_index = 0
-        for col in range(ytrain.shape[0]):
-            if classes[c] == ytrain[col]:
-                sum_index = sum_index + 1
-        p_y.append(sum_index/ytrain.shape[0])
-    return p_y
-
-    # NUMBER_OF_CLASSES = 4
-    # return np.divide(np.delete(np.bincount(ytrain, minlength=NUMBER_OF_CLASSES + 1), 0), ytrain.shape[0])
+    # zlicz wystapienia klas w wektorze ytrain
+    # podziel wystąpienia przez ilość etykiet ytrain
+    return np.divide(np.bincount(ytrain), ytrain.shape[0])
 
 
 def estimate_p_x_y_nb(Xtrain, ytrain, a, b):
