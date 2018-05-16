@@ -185,7 +185,7 @@ def model_selection_nb(Xtrain, Xval, ytrain, yval, a_values, b_values):
     blen = int(len(b_values))
     errors = []
 
-    def test(index):
+    def find_error(index):
         nonlocal best_e_index
         i = int(index / alen)
         j = int(index % blen)
@@ -199,20 +199,8 @@ def model_selection_nb(Xtrain, Xval, ytrain, yval, a_values, b_values):
         if errors[best_e_index] > error:
             best_e_index = index
 
-    xx = map(test, range(alen * blen))
+    xx = map(find_error, range(alen * blen))
     list(xx)
 
     return (errors[best_e_index], a_values[int(round(best_e_index / len(b_values)))],
             b_values[best_e_index % len(b_values)], np.array(errors).reshape(len(a_values), len(b_values)))
-
-    # best_k_index = 0
-    # errors = []
-    # sorted_train = sort_train_labels_knn(hamming_distance(Xval, Xtrain), ytrain)
-    #
-    # for k in range(k_values.shape[0]):
-    #     error = classification_error(p_y_x_knn(sorted_train, k_values[k]), yval)
-    #     errors.append(error)
-    #     if errors[best_k_index] > error:
-    #         best_k_index = k
-    #
-    # return errors[best_k_index], k_values[best_k_index], errors
